@@ -1,0 +1,8 @@
+## Message Passing
+
+- REST Person
+    - I decided on using a REST endpoint for Person because it is likely to be used by external collaborators to add more Persons to the database.
+- REST Connection
+    - I decided on using a REST endpoint for Connection because this is used by the frontend application and it is easiest to send a regular HTTP request to a REST endpoint.
+- gRPC Location
+    - I decided on using a gRPC endpoint for LocationProducer because this is only used internally by ingesting location data from the UdaTracker application. Using gRPC will also guarantee the Kafka events format and make it more predictable when LocationConsumer consumes events to write to the database.

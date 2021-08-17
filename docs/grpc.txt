@@ -1,0 +1,24 @@
+## gRPC documentation
+
+### Message formats and service
+
+```
+message LocationMessage {
+  int32 person_id = 1;
+  float latitude = 2;
+  float longitude = 3;
+}
+
+service LocationService {
+  rpc Create(LocationMessage) returns (LocationMessage);
+}
+```
+
+### Sample request
+
+1. Navigate to the `location-producer` directory
+2. Edit the grpc_client.py file with the data you'd like to add such as `location1` and `location2`
+3. Run the `grpc_client.py` file
+```
+python grpc_client.py
+```

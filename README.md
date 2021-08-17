@@ -34,7 +34,7 @@ We will be installing the tools that we'll need to use for getting our environme
 To run the application, you will need a K8s cluster running locally and to interface with it via `kubectl`. We will be using Vagrant with VirtualBox to run K3s.
 
 #### Initialize K3s
-In this project's root, run `vagrant up`. 
+In this project's root, run `vagrant up`.
 ```bash
 $ vagrant up
 ```
@@ -150,3 +150,55 @@ Your architecture diagram should focus on the services and how they talk to one 
 ## Tips
 * We can access a running Docker container using `kubectl exec -it <pod_id> sh`. From there, we can `curl` an endpoint to debug network issues.
 * The starter project uses Python Flask. Flask doesn't work well with `asyncio` out-of-the-box. Consider using `multiprocessing` to create threads for asynchronous behavior in a standard Flask application.
+
+## Run the project
+
+### Install kafka Helm Chart
+
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install kafka --set volumePermissions.enabled=true --set zookeeper.volumePermissions.enabled=true bitnami/kafka
+```
+
+### NodePorts
+- 30000: frontend
+- 30001: person api
+- 30002: location consumer
+- 30003: location producer
+- 30004: connection api
+
+### Deploy services
+
+1. Person service
+```
+cd modules/person
+k apply -f deployment/
+k get pods # get person-db pod name
+sh ./db/run_db_command.sh <person-db-pod-name>
+
+http://localhost:30001/api/persons
+```
+2. Connection service
+```
+cd modules/connection
+k apply -f deployment/
+k get pods # get connection-db pod name
+sh ./db/run_db_command.sh <connection-db-pod-name>
+
+http://localhost:30004/api/persons/1/connection?start_date=2020-01-01&end_date=2020-12-30&distance=5
+```
+3. LocationProducer service
+```
+cd modules/location-producer
+k apply -f deployment/
+```
+4. LocationConsumer service
+```
+cd modules/location-consumer
+k apply -f deployment/
+```
+5. Frontend service
+```
+cd modules/frontend
+k apply -f deployment/
+```
